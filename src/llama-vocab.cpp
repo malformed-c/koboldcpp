@@ -2721,11 +2721,10 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                 || t.first == "[TOOL_CALLS]"
                 || t.first == "[ARGS]"
             ) {
-                LLAMA_LOG_WARN("%s: applying hybrid fix to '%s' (%d), old attributes: %u\n",
-                        __func__, t.first.c_str(), t.second, attr);
+                LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to NORMAL (%u), old attributes: %u\n",
+                        __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_NORMAL, attr);
 
                 token_data.attr = LLAMA_TOKEN_ATTR_NORMAL;
-                id_to_token[t.second].type = LLAMA_TOKEN_TYPE_USER_DEFINED;
             }
         }
 
@@ -2788,7 +2787,14 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
     // build special tokens cache
     {
         for (llama_token id = 0; id < (llama_token) n_tokens; ++id) {
-            if (id_to_token[id].attr & (LLAMA_TOKEN_ATTR_CONTROL | LLAMA_TOKEN_ATTR_USER_DEFINED | LLAMA_TOKEN_ATTR_UNKNOWN)) {
+            const std::string & tstr = id_to_token[id].text;
+
+            // Ministral workaround
+            bool is_custom_visible = (tstr == "[THINK]" || tstr == "[/THINK]"
+                                   || tstr == "[CALL_ID]" || tstr == "[ARGS]"
+                                   || tstr == "[TOOL_CALLS]" || tstr == "[TOOL_CONTENT]");
+
+            if (is_custom_visible || (id_to_token[id].attr & (LLAMA_TOKEN_ATTR_CONTROL | LLAMA_TOKEN_ATTR_USER_DEFINED | LLAMA_TOKEN_ATTR_UNKNOWN)))) {
                 cache_special_tokens.push_back(id);
             }
         }
