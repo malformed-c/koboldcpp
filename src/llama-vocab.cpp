@@ -2721,10 +2721,11 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                 || t.first == "[TOOL_CALLS]"
                 || t.first == "[ARGS]"
             ) {
-                LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to NORMAL (%u), old attributes: %u\n",
-                        __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_NORMAL, attr);
+                LLAMA_LOG_WARN("%s: applying hybrid fix to '%s' (%d), old attributes: %u\n",
+                        __func__, t.first.c_str(), t.second, attr);
 
-                attr = LLAMA_TOKEN_ATTR_NORMAL;
+                token_data.attr = LLAMA_TOKEN_ATTR_NORMAL;
+                id_to_token[t.second].type = LLAMA_TOKEN_TYPE_USER_DEFINED;
             }
         }
 
