@@ -2724,7 +2724,7 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                 LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to NORMAL (%u), old attributes: %u\n",
                         __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_NORMAL, attr);
 
-                token_data.attr = LLAMA_TOKEN_ATTR_NORMAL;
+                attr = LLAMA_TOKEN_ATTR_NORMAL;
             }
         }
 
@@ -2794,7 +2794,7 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                                    || tstr == "[CALL_ID]" || tstr == "[ARGS]"
                                    || tstr == "[TOOL_CALLS]" || tstr == "[TOOL_CONTENT]");
 
-            if (is_custom_visible || (id_to_token[id].attr & (LLAMA_TOKEN_ATTR_CONTROL | LLAMA_TOKEN_ATTR_USER_DEFINED | LLAMA_TOKEN_ATTR_UNKNOWN)))) {
+            if (is_custom_visible || (id_to_token[id].attr & (LLAMA_TOKEN_ATTR_CONTROL | LLAMA_TOKEN_ATTR_USER_DEFINED | LLAMA_TOKEN_ATTR_UNKNOWN))) {
                 cache_special_tokens.push_back(id);
             }
         }
