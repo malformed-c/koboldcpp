@@ -2706,20 +2706,24 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                 || t.first == "<|message|>"
                 || t.first == "<|start|>"
                 || t.first == "<|constrain|>"
-                // Ministral 3 tokens
-                || t.first == "[THINK]"
+
+            ) {
+                LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to USER_DEFINED (%u), old attributes: %u\n",
+                        __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_USER_DEFINED, attr);
+
+                attr = LLAMA_TOKEN_ATTR_USER_DEFINED;
+            } else if (t.first == "[THINK]" // Ministral 3 tokens
                 || t.first == "[/THINK]"
                 // I've added these because kobold doesn't support token tool calls
                 // So I think we should expose them to the caller
                 || t.first == "[CALL_ID]"
                 || t.first == "[TOOL_CONTENT]"
                 || t.first == "[TOOL_CALLS]"
-                || t.first == "[ARGS]"
-            ) {
-                LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to USER_DEFINED (%u), old attributes: %u\n",
-                        __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_USER_DEFINED, attr);
+                || t.first == "[ARGS]") {
+                LLAMA_LOG_WARN("%s: setting token '%s' (%d) attribute to NORMAL (%u), old attributes: %u\n",
+                        __func__, t.first.c_str(), t.second, LLAMA_TOKEN_ATTR_NORMAL, attr);
 
-                attr = LLAMA_TOKEN_ATTR_USER_DEFINED;
+                attr = LLAMA_TOKEN_ATTR_NORMAL;
             }
         }
 
