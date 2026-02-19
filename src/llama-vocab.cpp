@@ -2717,7 +2717,6 @@ void llama_vocab::impl::load(llama_model_loader & ml, const LLM_KV & kv) {
                 // I've added these because kobold doesn't support custom style tool calls
                 // So I think we should expose them to the caller as well
                 || t.first == "[CALL_ID]"
-                || t.first == "[TOOL_CONTENT]"
                 || t.first == "[TOOL_CALLS]"
                 || t.first == "[ARGS]"
             ) {
